@@ -27,7 +27,6 @@ class TenderClass
     public function __construct()
     {
         $keywords = config('keywords.keywords');
-        dd($keywords);
 //        include_once 'keywords.txt';
         $this->keywords = $keywords;
         $this->client = new Client();
