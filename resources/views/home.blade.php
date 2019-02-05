@@ -12,18 +12,12 @@
                             <td>
                                 <a href='{{$tender->tender->url}}'>{{$tender->tender->url}}</a>
                             </td>
-                            <td>
-                                {{$tender->tender_name}}
-                            </td>
-                            <td>
-                                до: {{$tender->tender->end_date}}
-                            </td>
+                            <td>{{$tender->tender_name}}</td>
+                            <td>до: {{$tender->tender->end_date}}</td>
                         </tr>
                         @foreach($tender->lots as $lot)
                             <tr class="dropMenu menu-{{$tender->id}}">
-                                <td colspan="3" class="lot">
-                                    {{$lot->lot}}
-                                </td>
+                                <td colspan="3" class="lot">{{$lot->lot}}</td>
                             </tr >
                         @endforeach
                         <tr>
