@@ -19,7 +19,8 @@ class HomeController extends Controller
         $comTenders = SuccessCommercialTender::where('new', true)->get();
 
         $tenders = $govTenders->merge($comTenders);
-        return view('home', compact('tenders'));
+        $title = "Новые тендеры";
+        return view('home', compact('tenders', 'title'));
     }
 
     /**
@@ -33,6 +34,7 @@ class HomeController extends Controller
         $comTenders = SuccessCommercialTender::all();
 
         $tenders = $govTenders->merge($comTenders);
-        return view('home', compact('tenders'));
+        $title = "Все тендеры";
+        return view('home', compact('tenders', 'title'));
     }
 }

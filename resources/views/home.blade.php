@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="card">
-            <div class="card-header">Новые тендеры</div>
+            <div class="card-header">{{$title}}</div>
 
             <div class="card-body">
                 <table class="tender-table">
@@ -19,15 +19,13 @@
                                 до: {{$tender->tender->end_date}}
                             </td>
                         </tr>
-
-                        <tr class="dropMenu menu-{{$tender->id}}">
-                            @foreach($tender->lots as $lot)
+                        @foreach($tender->lots as $lot)
+                            <tr class="dropMenu menu-{{$tender->id}}">
                                 <td colspan="3" class="lot">
                                     {{$lot->lot}}
                                 </td>
-                            @endforeach
-                        </tr >
-
+                            </tr >
+                        @endforeach
                         <tr>
                             <td colspan="3" class="blank"></td>
                         </tr>
