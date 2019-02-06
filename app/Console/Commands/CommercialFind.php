@@ -21,17 +21,17 @@ class CommercialFind extends Command
      */
     protected $description = 'Find commercial tenders with keywords in name/lots';
 
-    private $commercialTenderFind;
+    private $commercialTenderClass;
 
     /**
      * Create a new command instance.
      *
      * @param CommercialTenderClass $commercialTenderFind
      */
-    public function __construct(CommercialTenderClass $commercialTenderFind)
+    public function __construct(CommercialTenderClass $commercialTenderClass)
     {
         parent::__construct();
-        $this->commercialTenderFind = $commercialTenderFind;
+        $this->commercialTenderClass = $commercialTenderClass;
     }
 
     /**
@@ -41,6 +41,6 @@ class CommercialFind extends Command
      */
     public function handle()
     {
-        $this->commercialTenderFind->findTenders();
+        $this->commercialTenderClass->findTenders();
     }
 }

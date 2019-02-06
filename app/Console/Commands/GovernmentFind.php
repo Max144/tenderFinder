@@ -21,17 +21,17 @@ class GovernmentFind extends Command
      */
     protected $description = 'Find government tenders with keywords in name/lots';
 
-    private $governmentTenderFind;
+    private $governmentTenderClass;
 
     /**
      * Create a new command instance.
      *
      * @param GovernmentTenderClass $governmentTenderFind
      */
-    public function __construct(GovernmentTenderClass $governmentTenderFind)
+    public function __construct(GovernmentTenderClass $governmentTenderClass)
     {
         parent::__construct();
-        $this->governmentTenderFind = $governmentTenderFind;
+        $this->governmentTenderClass = $governmentTenderClass;
     }
 
     /**
@@ -41,6 +41,6 @@ class GovernmentFind extends Command
      */
     public function handle()
     {
-        $this->governmentTenderFind->findTenders();
+        $this->governmentTenderClass->findTenders();
     }
 }

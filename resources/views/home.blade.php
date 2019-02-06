@@ -10,7 +10,7 @@
                     @foreach($tenders as $tender)
                         <tr class="main" data-link="menu-{{$tender->id}}">
                             <td>
-                                <a href='{{$tender->tender->url}}'>{{$tender->tender->url}}</a>
+                                <a href='{{$tender->tender->url}}' target="_blank">{{$tender->tender->url}}</a>
                             </td>
                             <td>{{$tender->tender_name}}</td>
                             <td>до: {{$tender->tender->end_date}}</td>
