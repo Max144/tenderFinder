@@ -26,7 +26,7 @@ class CommercialFind extends Command
     /**
      * Create a new command instance.
      *
-     * @param CommercialTenderClass $commercialTenderFind
+     * @param CommercialTenderClass $commercialTenderClass
      */
     public function __construct(CommercialTenderClass $commercialTenderClass)
     {

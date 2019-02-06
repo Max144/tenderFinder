@@ -26,7 +26,7 @@ class GovernmentFind extends Command
     /**
      * Create a new command instance.
      *
-     * @param GovernmentTenderClass $governmentTenderFind
+     * @param GovernmentTenderClass $governmentTenderClass
      */
     public function __construct(GovernmentTenderClass $governmentTenderClass)
     {
