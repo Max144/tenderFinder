@@ -10,12 +10,12 @@
                     @foreach($tenders as $tender)
                         <tr class="main" data-link="menu-{{$tender->id}}">
                             <td>
-                                <a href='{{$tender->tender->url}}' target="_blank">{{$tender->tender->url}}</a>
+                                <a href='{{$tender->url}}' target="_blank">{{$tender->url}}</a>
                             </td>
-                            <td>{{$tender->tender_name}}</td>
-                            <td>до: {{$tender->tender->end_date}}</td>
+                            <td>{{$tender->successTender->tender_name}}</td>
+                            <td>до: {{$tender->end_date}}</td>
                         </tr>
-                        @foreach($tender->lots as $lot)
+                        @foreach($tender->successTender->lots as $lot)
                             <tr class="dropMenu menu-{{$tender->id}}">
                                 <td colspan="3" class="lot">{{$lot->lot}}</td>
                             </tr >

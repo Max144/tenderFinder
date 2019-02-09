@@ -2,16 +2,15 @@
 
 namespace App\FindClasses;
 
-use App\Models\GovernmentTender;
+use App\Models\Tender;
 use Exception;
 
 class GovernmentTenderClass extends TenderClass
 {
     //возвращает все гос. тендеры
-    public function __construct(GovernmentTender $governmentTender)
+    public function __construct(Tender $tender)
     {
-        $this->tenderModel = $governmentTender;
-        parent::__construct();
+        parent::__construct($tender);
         $this->setLinksStartEnd('https://smarttender.biz/publichni-zakupivli-prozorro/?p=', '&extfilter=1&statuses=%2b%2cP&nh=1');
     }
 
@@ -56,7 +55,9 @@ class GovernmentTenderClass extends TenderClass
                 }else{
                     $lots_list = $this->getNomenclatures($res);
                 }
-                $tender = GovernmentTender::create($info);
+
+                $info['type'] = 'government';
+                $tender = $this->tenderModel::create($info);
                 array_push($lots_list, $tender_name);
                 if ($this->checkLots($lots_list)) {
                     array_pop($lots_list);

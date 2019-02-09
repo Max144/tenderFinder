@@ -4,6 +4,7 @@ namespace App\FindClasses;
 
 
 
+use App\Models\Tender;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
@@ -24,12 +25,13 @@ class TenderClass
      */
     protected $keywords;
 
-    public function __construct()
+    public function __construct(Tender $tender)
     {
         $keywords = config('keywords.keywords');
 //        include_once 'keywords.txt';
         $this->keywords = $keywords;
         $this->client = new Client();
+        $this->tenderModel = $tender;
     }
 
     protected function setLink()

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuccessCommercialTender;
+use App\Models\SuccessTender;
 use App\Models\SuccessGovernmentTender;
+use App\Models\Tender;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -15,10 +17,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $govTenders = SuccessGovernmentTender::where('new', true)->get();
-        $comTenders = SuccessCommercialTender::where('new', true)->get();
+        $user = Auth::user();
+        $tenders = Tender::whereIn('type', $user->tenderTypes()->pluck('name'))->
+        whereHas('successTender', function($q){
+            $q->where('new', true);
+        })->with('successTender', 'successTender.lots')->get();
 
-        $tenders = $govTenders->merge($comTenders);
         $title = "Новые тендеры";
         return view('home', compact('tenders', 'title'));
     }
@@ -30,10 +34,10 @@ class HomeController extends Controller
      */
     public function all()
     {
-        $govTenders = SuccessGovernmentTender::all();
-        $comTenders = SuccessCommercialTender::all();
+        $user = Auth::user();
+        $tenders = Tender::whereIn('type', $user->tenderTypes()->pluck('name'))->
+        has('successTender')->with('successTender', 'successTender.lots')->get();
 
-        $tenders = $govTenders->merge($comTenders);
         $title = "Все тендеры";
         return view('home', compact('tenders', 'title'));
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCommercialTendersTable extends Migration
+class TenderTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateCommercialTendersTable extends Migration
      */
     public function up()
     {
-        Schema::create('commercial_tenders', function (Blueprint $table) {
+        Schema::create('tender_types', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('url');
-            $table->dateTime('end_date');
+
+            $table->string('name');
         });
     }
 
@@ -27,6 +27,6 @@ class CreateCommercialTendersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('commercial_tenders');
+        Schema::dropIfExists('tender_types');
     }
 }

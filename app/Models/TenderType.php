@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class GovernmentTenderLot extends Model
+class TenderType extends Model
 {
     protected $guarded = ['id'];
     public $timestamps = false;

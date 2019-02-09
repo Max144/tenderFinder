@@ -2,16 +2,11 @@
 
 namespace App\FindClasses;
 
-use App\Models\CommercialTender;
+use App\Models\Tender;
 use Symfony\Component\DomCrawler\Crawler;
 
 class CommercialTenderClass extends TenderClass
 {
-    public function __construct(CommercialTender $commercialTender)
-    {
-        $this->tenderModel = $commercialTender;
-        parent::__construct();
-    }
 
     public function findTenders()
     {
@@ -66,7 +61,8 @@ class CommercialTenderClass extends TenderClass
                     continue;
                 }
                 try{
-                    $tender = CommercialTender::create($info);
+                    $info['type'] = 'smarttender';
+                    $tender = Tender::create($info);
                     array_push($lots, $tender_name);
                     if ($this->checkLots($lots)) {
                         array_pop($lots);
