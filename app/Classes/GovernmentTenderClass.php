@@ -104,4 +104,13 @@ class GovernmentTenderClass extends TenderClass
 
         return $tender_name;
     }
+
+    public function makeTendersOld()
+    {
+        $successTenders = $this->tenderModel->whereHas('successTender')->where('type', 'government')->get();
+
+        foreach ($successTenders as $tender){
+            $tender->successTender()->update(['new' => false]);
+        }
+    }
 }

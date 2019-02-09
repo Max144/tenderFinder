@@ -165,12 +165,5 @@ class TenderClass
         $this->tenderModel->whereDate('end_date', '<', Carbon::now())->delete();
     }
 
-    public function makeTendersOld()
-    {
-        $successTenders = $this->tenderModel->whereHas('successTender')->get();
-
-        foreach ($successTenders as $tender){
-            $tender->successTender()->update(['new' => false]);
-        }
-    }
+    abstract public function makeTendersOld();
 }

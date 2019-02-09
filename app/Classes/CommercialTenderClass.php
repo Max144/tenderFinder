@@ -193,4 +193,14 @@ class CommercialTenderClass extends TenderClass
     {
         return $a[1];
     }
+
+
+    public function makeTendersOld()
+    {
+        $successTenders = $this->tenderModel->whereHas('successTender')->where('type', '<>', 'government')->get();
+
+        foreach ($successTenders as $tender){
+            $tender->successTender()->update(['new' => false]);
+        }
+    }
 }
