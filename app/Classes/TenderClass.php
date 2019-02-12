@@ -11,7 +11,7 @@ use GuzzleHttp\Psr7\Request;
 use Symfony\Component\DomCrawler\Crawler;
 use GuzzleHttp\Exception\RequestException;
 
-class TenderClass
+abstract class TenderClass
 {
     protected
         $link_start,
