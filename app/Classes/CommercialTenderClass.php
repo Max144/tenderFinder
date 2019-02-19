@@ -11,7 +11,8 @@ class CommercialTenderClass extends TenderClass
     public function findTenders()
     {
         $this->makeTendersOld();
-        $this->findSmartTender();
+//        $this->findSmartTender();
+        $this->findAlladin();
 //        $this->findTenderGid();
 //        $this->findRealto();
     }
@@ -75,6 +76,51 @@ class CommercialTenderClass extends TenderClass
                     \Log::error( $info['url'].PHP_EOL."!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
                 }
                 //$this->logger->info('added to DB');
+            }
+        }
+    }
+
+    private function findAlladin()
+    {
+        {
+            $ch = curl_init();
+
+            // set url
+            curl_setopt($ch, CURLOPT_URL, "https://alltenders.ald.in.ua/api/tender/list?parameters=%7B%22pageIndex%22:0,%22pageSize%22:1000,%22filters%22:%7B%22stageStateId%22:%7B%22value%22:2,%22matchMode%22:%22in%22%7D%7D,%22column%22:%22dateStart%22,%22order%22:1%7D");
+
+            //return the transfer as a string
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            // $output contains the output string
+            $output = curl_exec($ch);
+
+            // close curl resource to free up system resources
+            curl_close($ch);
+
+            $res = \GuzzleHttp\json_decode($output)->data;
+
+            foreach ($res as $tenderInfo) {
+                $url = $tenderInfo->aladdinId;
+
+                if(!Tender::where('url', $url)->count()) {
+                    $name = $tenderInfo->title;
+                    $date = $tenderInfo->dateEnd;
+//                dd($date);
+                    try {
+                        $info = [
+                            'url' => $url,
+                            'type' => 'alladin',
+                            'end_date' => $date,
+                        ];
+                        $tender = Tender::create($info);
+
+                        if ($this->checkLots([$name])) {
+                            $tender->successTender()->create(['tender_name' => trim($name)]);
+                        }
+                    } catch (\Exception $ex) {
+                        \Log::error($info['url'] . PHP_EOL . "!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
+                    }
+                }
             }
         }
     }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuccessTender;
-use App\Models\SuccessGovernmentTender;
 use App\Models\Tender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

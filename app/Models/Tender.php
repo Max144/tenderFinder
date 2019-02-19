@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Tender extends Model
@@ -12,5 +13,10 @@ class Tender extends Model
     public function successTender()
     {
         return $this->hasOne(SuccessTender::class, 'tender_id');
+    }
+
+    public function setEndDateAttribute($value)
+    {
+        $this->attributes['end_date'] = Carbon::parse($value)->toDateTimeString();
     }
 }
