@@ -11,7 +11,7 @@ class CommercialTenderClass extends TenderClass
     public function findTenders()
     {
         $this->makeTendersOld();
-//        $this->findSmartTender();
+        $this->findSmartTender();
         $this->findAlladin();
 //        $this->findTenderGid();
 //        $this->findRealto();
