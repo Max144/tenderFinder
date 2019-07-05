@@ -11,13 +11,13 @@ class HomeController extends Controller
     {
         $searches = Search::where('created_at', '>=', Carbon::now()->subDay()->toDateTimeString())->latest()->get();
 
-        return view('home', compact('tenders', 'searches'));
+        return view('home', compact('searches'));
     }
 
     public function all()
     {
         $searches = Search::latest()->get();
 
-        return view('home', compact('tenders', 'searches'));
+        return view('home', compact('searches'));
     }
 }
