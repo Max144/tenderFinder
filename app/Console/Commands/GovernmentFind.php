@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\FindClasses\GovernmentTenderClass;
+use App\Models\Search;
 use Illuminate\Console\Command;
 
 class GovernmentFind extends Command
@@ -41,6 +42,13 @@ class GovernmentFind extends Command
      */
     public function handle()
     {
-        $this->governmentTenderClass->findTenders();
+        $search = new Search([
+            'ended' => false
+        ]);
+
+        $this->governmentTenderClass->findTenders($search);
+
+        $search->ended = true;
+        $search->save();
     }
 }

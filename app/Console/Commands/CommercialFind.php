@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\FindClasses\CommercialTenderClass;
+use App\Models\Search;
 use Illuminate\Console\Command;
 
 class CommercialFind extends Command
@@ -41,6 +42,13 @@ class CommercialFind extends Command
      */
     public function handle()
     {
-        $this->commercialTenderClass->findTenders();
+        $search = Search::create([
+            'ended' => false
+        ]);
+
+        $this->commercialTenderClass->findTenders($search);
+
+        $search->ended = true;
+        $search->save();
     }
 }

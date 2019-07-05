@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\FindClasses\CommercialTenderClass;
 use App\FindClasses\GovernmentTenderClass;
+use App\Models\Search;
 use Illuminate\Console\Command;
 
 class TendersFind extends Command
@@ -47,7 +48,14 @@ class TendersFind extends Command
         $this->commercialTenderClass->deletePassedDates();
         $this->governmentTenderClass->deletePassedDates();
 
-        $this->commercialTenderClass->findTenders();
-        $this->governmentTenderClass->findTenders();
+        $search = new Search([
+            'ended' => false
+        ]);
+
+        $this->commercialTenderClass->findTenders($search);
+        $this->governmentTenderClass->findTenders($search);
+
+        $search->ended = true;
+        $search->save();
     }
 }

@@ -100,8 +100,8 @@ abstract class TenderClass
     {
         try  {
             $html = $this->client->get($this->link)->getBody();
-            $pages_count = $this->getSmartTenderMaxPage($html);
-//            $pages_count = 1;
+//            $pages_count = $this->getSmartTenderMaxPage($html);
+            $pages_count = 5;
             \Log::info("количество страниц : $pages_count");
 
             $result = array();
@@ -122,7 +122,7 @@ abstract class TenderClass
                         return !$this->tenderModel->where('url', $url)->count();
                     });
                     foreach ($links as $key => $value) {
-                        $date = \DateTime::createFromFormat('d.m.Y*H:i', $dates[$key]);
+                        $date = \DateTime::createFromFormat('d.m.Y*H:i', $dates[$key])->format('Y-m-d H:i:s');
                         $result[] = ['url' => $value, 'end_date' => $date];
                     }
 //                }
@@ -164,6 +164,4 @@ abstract class TenderClass
     {
         $this->tenderModel->whereDate('end_date', '<', Carbon::now())->delete();
     }
-
-    abstract public function makeTendersOld();
 }

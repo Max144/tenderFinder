@@ -15,6 +15,12 @@ class Tender extends Model
         return $this->hasOne(SuccessTender::class, 'tender_id');
     }
 
+
+    public function search()
+    {
+        return $this->belongsTo(Search::class, 'search_id');
+    }
+
     public function setEndDateAttribute($value)
     {
         $this->attributes['end_date'] = Carbon::parse($value)->toDateTimeString();

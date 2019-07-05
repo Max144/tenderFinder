@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSuccessTendersTable extends Migration
+class CreateSearchesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateSuccessTendersTable extends Migration
      */
     public function up()
     {
-        Schema::create('success_tenders', function (Blueprint $table) {
+        Schema::create('searches', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('tender_name')->nullable();
-
-            $table->unsignedInteger('tender_id');
-            $table->foreign('tender_id')->references('id')->on('tenders')->onDelete('cascade');
+            $table->boolean('ended')->default(false);
+            $table->timestamps();
         });
     }
 
@@ -29,6 +27,6 @@ class CreateSuccessTendersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('success_tenders');
+        Schema::dropIfExists('searches');
     }
 }

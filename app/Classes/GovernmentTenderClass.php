@@ -2,6 +2,7 @@
 
 namespace App\FindClasses;
 
+use App\Models\Search;
 use App\Models\Tender;
 use Exception;
 
@@ -14,9 +15,8 @@ class GovernmentTenderClass extends TenderClass
         $this->setLinksStartEnd('https://smarttender.biz/publichni-zakupivli-prozorro/?p=', '&extfilter=1&statuses=%2b%2cP&nh=1');
     }
 
-    public function findTenders()
+    public function findTenders(Search $search)
     {
-        $this->makeTendersOld();
         $this->setLink();
 
         $res = $this->getNewLinksSmarttender();
@@ -57,6 +57,8 @@ class GovernmentTenderClass extends TenderClass
                 }
 
                 $info['type'] = 'government';
+                $info['search_id'] = $search->id;
+
                 $tender = $this->tenderModel::create($info);
                 array_push($lots_list, $tender_name);
                 if ($this->checkLots($lots_list)) {
@@ -103,14 +105,5 @@ class GovernmentTenderClass extends TenderClass
         $tender_name .= $res['Description']??'';
 
         return $tender_name;
-    }
-
-    public function makeTendersOld()
-    {
-        $successTenders = $this->tenderModel->whereHas('successTender')->where('type', 'government')->get();
-
-        foreach ($successTenders as $tender){
-            $tender->successTender()->update(['new' => false]);
-        }
     }
 }

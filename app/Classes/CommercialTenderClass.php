@@ -2,17 +2,23 @@
 
 namespace App\FindClasses;
 
+use App\Models\Search;
 use App\Models\Tender;
 use Symfony\Component\DomCrawler\Crawler;
 
 class CommercialTenderClass extends TenderClass
 {
 
-    public function findTenders()
+    /**
+     * @var Search $search
+     */
+    protected $search;
+
+    public function findTenders(Search $search)
     {
-        $this->makeTendersOld();
+        $this->search = $search;
         $this->findSmartTender();
-        $this->findAlladin();
+//        $this->findAlladin();
 //        $this->findTenderGid();
 //        $this->findRealto();
     }
@@ -63,6 +69,7 @@ class CommercialTenderClass extends TenderClass
                 }
                 try{
                     $info['type'] = 'smarttender';
+                    $info['search_id'] = $this->search->id;
                     $tender = Tender::create($info);
                     array_push($lots, $tender_name);
                     if ($this->checkLots($lots)) {
@@ -111,6 +118,7 @@ class CommercialTenderClass extends TenderClass
                             'url' => $url,
                             'type' => 'alladin',
                             'end_date' => $date,
+                            'search_id' => $this->search->id,
                         ];
                         $tender = Tender::create($info);
 
@@ -238,15 +246,5 @@ class CommercialTenderClass extends TenderClass
     private function getValuesFromRegex($a)
     {
         return $a[1];
-    }
-
-
-    public function makeTendersOld()
-    {
-        $successTenders = $this->tenderModel->whereHas('successTender')->where('type', '<>', 'government')->get();
-
-        foreach ($successTenders as $tender){
-            $tender->successTender()->update(['new' => false]);
-        }
     }
 }

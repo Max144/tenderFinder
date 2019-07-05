@@ -1,13 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+    @foreach($searches as $search)
     <div class="row">
         <div class="card">
-            <div class="card-header">{{$title}}</div>
+            <div class="card-header">{{$search->created_at}} -
+                @if($search->ended) {{$search->updated_at}} @else В процессе @endif
+
+            </div>
 
             <div class="card-body">
                 <table class="tender-table">
-                    @foreach($tenders as $tender)
+                    @foreach($search->successTenders as $tender)
                         <tr class="main" data-link="menu-{{$tender->id}}">
                             <td>
                                 <a href='{{$tender->url}}' target="_blank">{{$tender->url}}</a>
@@ -28,6 +32,7 @@
             </div>
         </div>
     </div>
+    @endforeach
 @endsection
 
 @section('scripts')
