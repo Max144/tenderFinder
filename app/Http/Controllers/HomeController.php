@@ -9,7 +9,11 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $searches = Search::where('created_at', '>=', Carbon::now()->subDay()->toDateTimeString())->latest()->get();
+        $fromDate = Carbon::now();
+        while($fromDate->isWeekend()) {
+            $fromDate->subDay();
+        }
+        $searches = Search::where('created_at', '>=', $fromDate->subDay())->latest()->get();
 
         return view('home', compact('searches'));
     }
