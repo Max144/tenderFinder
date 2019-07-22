@@ -22,7 +22,6 @@ class GovernmentTenderClass extends TenderClass
         $res = $this->getNewLinksSmarttender();
 //        $res[] = ['link' => 'https://smarttender.biz/publichni-zakupivli-prozorro/5352308/', 'date'=>'asd'];
         $pattern="/\/(\d+)/";
-        $numNewLinks = count($res);
 
         foreach ($res as $num=>$info) {
             preg_match($pattern, $info['url'], $res);
@@ -59,7 +58,7 @@ class GovernmentTenderClass extends TenderClass
                 $info['type'] = 'government';
                 $info['search_id'] = $search->id;
 
-                $tender = $this->tenderModel::create($info);
+                $tender = $search->tenders()::create($info);
                 array_push($lots_list, $tender_name);
                 if ($this->checkLots($lots_list)) {
                     array_pop($lots_list);

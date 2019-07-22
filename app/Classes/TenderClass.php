@@ -100,8 +100,7 @@ abstract class TenderClass
     {
         try  {
             $html = $this->client->get($this->link)->getBody();
-//            $pages_count = $this->getSmartTenderMaxPage($html);
-            $pages_count = 5;
+            $pages_count = $this->getSmartTenderMaxPage($html);
             \Log::info("количество страниц : $pages_count");
 
             $result = array();
@@ -116,9 +115,7 @@ abstract class TenderClass
 //
 //              дата окончания тендера
                     $dates = $this->getSmarttenderDates($html);
-                    $this->tenderModel;
-                    $model = $this->tenderModel;
-                    $links = array_filter($links, function ($url) use ($model){
+                    $links = array_filter($links, function ($url){
                         return !$this->tenderModel->where('url', $url)->count();
                     });
                     foreach ($links as $key => $value) {
