@@ -42,9 +42,7 @@ class CommercialFind extends Command
      */
     public function handle()
     {
-        $search = Search::create([
-            'ended' => false
-        ]);
+        $search = Search::create(['ended' => false]);
 
         $this->commercialTenderClass->findTenders($search);
 

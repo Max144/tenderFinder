@@ -42,9 +42,8 @@ class GovernmentFind extends Command
      */
     public function handle()
     {
-        $search = new Search([
-            'ended' => false
-        ]);
+        $search = Search::create(['ended' => false]);
+
 
         $this->governmentTenderClass->findTenders($search);
 

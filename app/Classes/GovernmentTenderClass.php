@@ -58,7 +58,7 @@ class GovernmentTenderClass extends TenderClass
                 $info['type'] = 'government';
                 $info['search_id'] = $search->id;
 
-                $tender = $search->tenders()::create($info);
+                $tender = $search->tenders()->create($info);
                 array_push($lots_list, $tender_name);
                 if ($this->checkLots($lots_list)) {
                     array_pop($lots_list);

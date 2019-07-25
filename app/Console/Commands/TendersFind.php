@@ -48,14 +48,14 @@ class TendersFind extends Command
         $this->commercialTenderClass->deletePassedDates();
         $this->governmentTenderClass->deletePassedDates();
 
-        $search = new Search([
-            'ended' => false
-        ]);
+        $search = Search::create(['ended' => false]);
+        $search->save();
 
         $this->commercialTenderClass->findTenders($search);
         $this->governmentTenderClass->findTenders($search);
 
         $search->ended = true;
         $search->save();
+
     }
 }

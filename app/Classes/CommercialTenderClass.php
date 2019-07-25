@@ -70,7 +70,7 @@ class CommercialTenderClass extends TenderClass
                 try{
                     $info['type'] = 'smarttender';
                     $info['search_id'] = $this->search->id;
-                    $tender = $this->search->tenders()::create($info);
+                    $tender = $this->search->tenders()->create($info);
                     array_push($lots, $tender_name);
                     if ($this->checkLots($lots)) {
                         array_pop($lots);
