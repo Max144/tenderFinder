@@ -12,20 +12,16 @@ class GovernmentTenderClass extends TenderClass
     public function __construct(Tender $tender)
     {
         parent::__construct($tender);
-        $this->setLinksStartEnd('https://smarttender.biz/publichni-zakupivli-prozorro/?p=', '&extfilter=1&statuses=%2b%2cP&nh=1');
-    }
+        $this->tradeSegment = 3;
+        $this->smartTenderUrl = 'https://smarttender.biz/publichni-zakupivli-prozorro/';}
 
     public function findTenders(Search $search)
     {
-        $this->setLink();
-
         $res = $this->getNewLinksSmarttender();
-//        $res[] = ['link' => 'https://smarttender.biz/publichni-zakupivli-prozorro/5352308/', 'date'=>'asd'];
-        $pattern="/\/(\d+)/";
+//        $res[] = ['url' => 'https://smarttender.biz/publichni-zakupivli-prozorro/9012885/', 'end_date'=>'2020-04-08 10:15:00', 'tenderId' => '9012885'];
 
-        foreach ($res as $num=>$info) {
-            preg_match($pattern, $info['url'], $res);
-            $tender_id = $res[1];
+        foreach ($res as $info) {
+            $tender_id = $info['tenderId'];
 
             $payload = "{\"tenderId\":\"{$tender_id}\"}";
             $headers = ['Content-Type' => 'application/json; charset=UTF8'];
@@ -34,7 +30,6 @@ class GovernmentTenderClass extends TenderClass
 
             try {
                 $res = $this->payload($url, $payload, $headers);
-
                 $tender_name = $this->getTenderName($res);
 
                 $lots_list = [];
@@ -54,11 +49,14 @@ class GovernmentTenderClass extends TenderClass
                 }else{
                     $lots_list = $this->getNomenclatures($res);
                 }
+                $data = [
+                    'url' => $info['url'],
+                    'end_date' => $info['end_date'],
+                    'type' => 'government',
+                    'search_id' => $search->id,
+                ];
 
-                $info['type'] = 'government';
-                $info['search_id'] = $search->id;
-
-                $tender = $search->tenders()->create($info);
+                $tender = $search->tenders()->create($data);
                 array_push($lots_list, $tender_name);
                 if ($this->checkLots($lots_list)) {
                     array_pop($lots_list);

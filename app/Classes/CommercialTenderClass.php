@@ -14,6 +14,13 @@ class CommercialTenderClass extends TenderClass
      */
     protected $search;
 
+    public function __construct(Tender $tender)
+    {
+        parent::__construct($tender);
+        $this->tradeSegment = 1;
+        $this->smartTenderUrl = 'https://smarttender.biz/komertsiyni-torgy/';
+    }
+
     public function findTenders(Search $search)
     {
         $this->search = $search;
@@ -26,22 +33,13 @@ class CommercialTenderClass extends TenderClass
     private function findSmartTender()
     {
         {
-            $this->setLinksStartEnd('https://smarttender.biz/komertsiyni-torgy/?p=', '');
-            $this->setLink();
-
             $res = $this->getNewLinksSmarttender();
-//            $res = [
-//                [
-//                    'url' => 'https://smarttender.biz/komertsiyni-torgy/5820078/',
-//                    'date_end' => '22.01.2019 16:00:00'
-//                ]
-//            ];
 
-            foreach ($res as $num=>$info) {
+            foreach ($res as $info) {
                 try {
                     $html = $this->client->get($info['url'])->getBody();
-                }catch (\GuzzleHttp\Exception\RequestException $ex){
-                    \Log::error($info['url'] . PHP_EOL ."error while receiving page content");
+                } catch (\GuzzleHttp\Exception\RequestException $ex) {
+                    \Log::error($info['url'] . PHP_EOL . "error while receiving page content");
                     continue;
                 }
 
@@ -49,40 +47,43 @@ class CommercialTenderClass extends TenderClass
                 $crawler->addHtmlContent($html);
                 try {
                     //lots pattern
-                    $pattern = "/\"MinimalStep\":.+?,\s*\"title\":\"(.+?)\",/i";
-                    preg_match_all($pattern, $html, $lots, PREG_SET_ORDER);
-                    $lots = array_map([$this, 'getValuesFromRegex'],$lots);
+                    $pattern = "/<script>\s+window\.preloadedData\s*=\s*(\{[\w\W]+?\}),\s*Resources/i";
+                    preg_match($pattern, $html, $matches);
+                    $res = $matches[1];
+                    $res = str_replace(["\r", "\n", "\t"], '', $res);
+                    $res = str_replace('model', '"model"', $res);
+                    $res .= '}';
 
+                    $tenderContent = json_decode($res);
+                    $lots = [];
 
-                    //name pattern
-                    $pattern = "/\"Number\":.+?,\"Title\":\"(.+?)\",/i";
-                    if(preg_match($pattern, $html, $name)){
-                        $tender_name = $name[1];
-                    } else{
-                        \Log::alert($info['url'] . " error with tender name");
-                        $tender_name = 'undefined';
+                    foreach ($tenderContent->model->Lots as $lot) {
+                        $lots[] = $lot->Title;
                     }
-                }
-                catch (\GuzzleHttp\Exception\RequestException $ex){
-                    \Log::error($info['url'] . PHP_EOL ."error while finding lots and getting name");
+                    $tenderName = $tenderContent->model->Title;
+                } catch (\Exception $ex) {
+                    \Log::error($info['url'] . PHP_EOL . "error while finding lots and getting name");
                     continue;
                 }
-                try{
-                    $info['type'] = 'smarttender';
-                    $info['search_id'] = $this->search->id;
-                    $tender = $this->search->tenders()->create($info);
-                    array_push($lots, $tender_name);
+                try {
+                    $data = [
+                        'url' => $info['url'],
+                        'end_date' => $info['end_date'],
+                        'type' => 'smarttender',
+                        'search_id' => $this->search->id,
+                    ];
+                    $tender = $this->search->tenders()->create($data);
+                    array_push($lots, $tenderName);
                     if ($this->checkLots($lots)) {
                         array_pop($lots);
-                        $successTender = $tender->successTender()->create(['tender_name' => trim($tender_name)]);
-                        foreach ($lots as $lot){
+                        $successTender = $tender->successTender()->create(['tender_name' => trim($tenderName)]);
+                        foreach ($lots as $lot) {
                             $successTender->lots()->create(['lot' => trim($lot)]);
                         }
                     }
-                }catch (\Exception $ex){
-                    \Log::error( $info['url'].PHP_EOL."!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
+                } catch (\Exception $ex) {
+                    \Log::error($info['url'] . PHP_EOL . "!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
                 }
-                //$this->logger->info('added to DB');
             }
         }
     }
@@ -109,7 +110,7 @@ class CommercialTenderClass extends TenderClass
             foreach ($res as $tenderInfo) {
                 $url = $tenderInfo->aladdinId;
 
-                if(!Tender::where('url', $url)->count()) {
+                if (!Tender::where('url', $url)->count()) {
                     $name = $tenderInfo->title;
                     $date = $tenderInfo->dateEnd;
 //                dd($date);
@@ -133,16 +134,15 @@ class CommercialTenderClass extends TenderClass
         }
     }
 
-
     private function findRealto()
     {
         $headers = ['Content-Type' => 'application/json; charset=UTF8'];
         $payload_start = '{"Page":';
         $payload_end = ',"PageSize":10,"OrderColumn":"","OrderDirection":"desc","SearchFilter":{"PriceFrom":"","PriceTo":"","ProcurementMethod":"open","procurementMethodTypes":[],"regions":[],"Statuses":["active.enquiries","active.tendering"],"IsStasusesDefaulted":false,"Cpvs":[],"Dkpp":null,"isProductionMode":true,"parentCodesEDRPOU":[],"codeEDRPOUs":"","Title":null,"OrganizationName":null,"searchTimeType":null,"tenderPeriodEndFrom":null,"tenderPeriodEndTo":null,"tenderPeriodStartFrom":null,"tenderPeriodStartTo":null,"isShowOnlyTendersCreatedOnOurSite":false,"CustomerRegion":null,"IsRealTendersForTestMode":false}}';
-        $this->page=1;
+        $this->page = 1;
         $ids = [];
         $dates = [];
-        $maxPage=1;
+        $maxPage = 1;
         do {
             $payload = $payload_start . $this->page . $payload_end;
             $url = 'https://rialto.e-tender.ua/api/services/etender/tender/GetTenders';
@@ -161,7 +161,7 @@ class CommercialTenderClass extends TenderClass
                 }
             }
             $this->page++;
-        } while ($this->page<=$maxPage);
+        } while ($this->page <= $maxPage);
 
         $url = 'https://rialto.e-tender.ua/api/services/etender/tender/GetTender';
         foreach ($ids as $key => $id) {
@@ -169,7 +169,7 @@ class CommercialTenderClass extends TenderClass
             $payload = '{"id":"' . $id . '","display":true}';
             $return = $this->payload($url, $payload, $headers)['result'];
 
-            $name =  $return['title'];
+            $name = $return['title'];
             foreach ($return['lots'] as $lot) {
                 foreach ($lot['items'] as $item) {
                     $lots[] = $item['description'];
@@ -189,7 +189,7 @@ class CommercialTenderClass extends TenderClass
     private function findTenderGid()
     {
         $this->setLinksStartEnd('https://tendergid.ua/ru/тендеры/actual/0/type/1/sort/published:desc/page/', '');
-        $this->page=0;
+        $this->page = 0;
         $this->setLink();
         $tenders = [];
 
@@ -198,7 +198,7 @@ class CommercialTenderClass extends TenderClass
         $crawler = new Crawler();
         $crawler->addHtmlContent($html);
         $res = $crawler->filter('div.pages.for_search_place>a')->eq(6)->text();
-        $max_page = ($res-1)*25;
+        $max_page = ($res - 1) * 25;
 
         while ($this->page <= $max_page) {
             $this->setLink();
@@ -221,30 +221,25 @@ class CommercialTenderClass extends TenderClass
 
 
             foreach ($links as $key => $link) {
-                if (!$this->db->checkExists($link)&&$this->db->checkOutOfDate(strtotime($dates[$key]))) {
+                if (!$this->db->checkExists($link) && $this->db->checkOutOfDate(strtotime($dates[$key]))) {
                     $tenders[] = [
-                        'link'=>$link,
-                        'name'=>$names[$key],
-                        'date'=>date("Y-m-d H:i:s", strtotime($dates[$key])),
+                        'link' => $link,
+                        'name' => $names[$key],
+                        'date' => date("Y-m-d H:i:s", strtotime($dates[$key])),
                     ];
                 }
             }
-            $this->page+=25;
+            $this->page += 25;
         }
 
-        if (count($tenders)==0) {
+        if (count($tenders) == 0) {
             return;
         }
-        foreach ($tenders as $key=>$info) {
+        foreach ($tenders as $key => $info) {
             $this->db->writeLinkToDatabase($info['url'], $info['end_date']);
             if ($this->checkLots([$info['name']])) {
                 $this->db->writeSuccessLinkToDatabase($info['name']);
             }
         }
-    }
-
-    private function getValuesFromRegex($a)
-    {
-        return $a[1];
     }
 }
