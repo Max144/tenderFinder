@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\FindClasses\CommercialTenderClass;
 use App\FindClasses\GovernmentTenderClass;
+use App\Models\Search;
 use Illuminate\Console\Command;
 
 class DeletePassedDatesTenders extends Command
@@ -46,5 +47,6 @@ class DeletePassedDatesTenders extends Command
     {
         $this->commercialTenderClass->deletePassedDates();
         $this->governmentTenderClass->deletePassedDates();
+        Search::doesnthave('tenders')->delete();
     }
 }
