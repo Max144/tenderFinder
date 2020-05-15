@@ -49,7 +49,6 @@ class GovernmentTenderClass extends TenderClass
                 }else{
                     $lots_list = $this->getNomenclatures($res);
                 }
-                \Log::info($lots_list);
                 $data = [
                     'url' => $info['url'],
                     'end_date' => $info['end_date'],
