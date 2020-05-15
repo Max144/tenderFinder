@@ -83,8 +83,7 @@ abstract class TenderClass
                 ]);
 
                 $tendersResult = json_decode($res->getBody()->getContents());
-//                $pagesCount = ceil($tendersResult->TotalCount / 20);
-                $pagesCount = 1;
+                $pagesCount = ceil($tendersResult->TotalCount / 20);
                 $tenders = $tendersResult->Tenders;
 
                 $newTenders = array_filter($tenders, function ($tender) {
