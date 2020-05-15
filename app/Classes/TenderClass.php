@@ -71,7 +71,7 @@ abstract class TenderClass
                             'MainProcurementCategoryIds' => [],
                             'MyFilterId' => null,
                             'OrganizerIds' => [],
-                            'Page' => $page++,
+                            'Page' => $page,
                             'PaymentTermTypeIds' => [],
                             'RegionInfos' => [],
                             'Sorting' => 2,
@@ -83,7 +83,8 @@ abstract class TenderClass
                 ]);
 
                 $tendersResult = json_decode($res->getBody()->getContents());
-                $pagesCount = ceil($tendersResult->TotalCount / 20);
+//                $pagesCount = ceil($tendersResult->TotalCount / 20);
+                $pagesCount = 1;
                 $tenders = $tendersResult->Tenders;
 
                 $newTenders = array_filter($tenders, function ($tender) {
@@ -98,7 +99,7 @@ abstract class TenderClass
                         'tenderId' => $tender->Id
                     ];
                 }
-            } while ($page <= $pagesCount);
+            } while ($page++ < $pagesCount);
         } catch (RequestException $ex) {
             var_dump("нет доступа\n");
             return [];
@@ -110,15 +111,15 @@ abstract class TenderClass
      * @param string $url
      * @param array $data
      * @param array $send_headers
-     * @param bool $return_headers
+     * @param string|null $requestType
      * @return array
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function payload($url, $data = array(), $send_headers = array(), $return_headers = false)
+    public function payload($url, $data = array(), $send_headers = array(), string $requestType = null)
     {
         $request = new Request(
-            'POST',
+            $requestType ?? 'POST',
             $url,
             $send_headers,
             $data

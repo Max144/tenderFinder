@@ -29,7 +29,7 @@ class GovernmentTenderClass extends TenderClass
 
 
             try {
-                $res = $this->payload($url, $payload, $headers);
+                $res = $this->payload($url, $payload, $headers, 'GET');
                 $tender_name = $this->getTenderName($res);
 
                 $lots_list = [];
@@ -41,7 +41,7 @@ class GovernmentTenderClass extends TenderClass
                         $headers = ['Content-Type' => 'application/json; charset=UTF8'];
                         $url = 'https://smarttender.biz/uk/PurchaseDetail/GetLotModel/';
 
-                        $res = $this->payload($url, $payload, $headers);
+                        $res = $this->payload($url, $payload, $headers, 'GET');
 
                         $lots_list = array_merge($lots_list, $this->getMultiLotsDescriptions($res));
                         $lots_list = $this->addMultiLotsLots($res, $lots_list);
@@ -49,6 +49,7 @@ class GovernmentTenderClass extends TenderClass
                 }else{
                     $lots_list = $this->getNomenclatures($res);
                 }
+                \Log::info($lots_list);
                 $data = [
                     'url' => $info['url'],
                     'end_date' => $info['end_date'],
