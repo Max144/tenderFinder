@@ -52,6 +52,9 @@ class CommercialTenderClass extends TenderClass
                     $res = $matches[1];
                     $res = str_replace(["\r", "\n", "\t"], '', $res);
                     $res = str_replace('model', '"model"', $res);
+                    do {
+                        $res = preg_replace("/(“.+?)\"(.+?”)/", "$(1)$(2)", $res, -1, $count);
+                    } while ($count);
                     $res .= '}';
 
                     $tenderContent = json_decode($res);
