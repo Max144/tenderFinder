@@ -18,10 +18,10 @@ class GovernmentTenderClass extends TenderClass
     public function findTenders(Search $search)
     {
         $res = $this->getNewLinksSmarttender();
-//        $res[] = ['url' => 'https://smarttender.biz/publichni-zakupivli-prozorro/9012885/', 'end_date'=>'2020-04-08 10:15:00', 'tenderId' => '9012885'];
+//        $res[] = ['url' => 'https://smarttender.biz/publichni-zakupivli-prozorro/UA-2020-11-11-001732-c/', 'end_date'=>'2020-04-08 10:15:00', 'tenderId' => 'UA-2020-11-11-001732-c'];
 
         foreach ($res as $info) {
-            $tender_id = $info['tenderId'];
+            $tender_id = $info['CdbNumber'] ?? $info['tenderId'];
 
             $payload = "{\"tenderId\":\"{$tender_id}\"}";
             $headers = ['Content-Type' => 'application/json; charset=UTF8'];
@@ -50,7 +50,7 @@ class GovernmentTenderClass extends TenderClass
                     $lots_list = $this->getNomenclatures($res);
                 }
                 $data = [
-                    'url' => $info['url'],
+                    'url' => $this->createTenderLink($tender_id),
                     'end_date' => $info['end_date'],
                     'type' => 'government',
                     'search_id' => $search->id,
@@ -58,6 +58,7 @@ class GovernmentTenderClass extends TenderClass
 
                 $tender = $search->tenders()->create($data);
                 array_push($lots_list, $tender_name);
+
                 if ($this->checkLots($lots_list)) {
                     array_pop($lots_list);
                     $successTender = $tender->successTender()->create(['tender_name' => trim($tender_name)]);
@@ -67,7 +68,7 @@ class GovernmentTenderClass extends TenderClass
                 }
 
             } catch (Exception $ex) {
-                \Log::error( $info['url'].PHP_EOL."!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
+                \Log::error( $this->createTenderLink($tender_id).PHP_EOL."!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
             }
         }
     }
