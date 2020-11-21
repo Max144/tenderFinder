@@ -83,8 +83,7 @@ abstract class TenderClass
                 ]);
 
                 $tendersResult = json_decode($res->getBody()->getContents());
-//                $pagesCount = ceil($tendersResult->TotalCount / 20);
-                $pagesCount = 10;
+                $pagesCount = ceil($tendersResult->TotalCount / 20);
                 $tenders = $tendersResult->Tenders;
 
                 $newTenders = array_filter($tenders, function ($tender) {
@@ -94,9 +93,9 @@ abstract class TenderClass
                 foreach ($newTenders as $tender) {
                     $date = Carbon::parse($tender->TenderingPeriod->DateEnd)->format('Y-m-d H:i:s');
                     $result[] = [
+                        'url' => $this->createTenderLink($tender->Id),
                         'end_date' => $date,
-                        'tenderId' => $tender->Id,
-                        'CdbNumber' => $tender->CdbNumber ?? '',
+                        'tenderId' => $tender->Id
                     ];
                 }
             } while ($page++ < $pagesCount);
@@ -135,12 +134,5 @@ abstract class TenderClass
     public function deletePassedDates()
     {
         $this->tenderModel->whereDate('end_date', '<', Carbon::now())->delete();
-    }
-
-    protected function objectToArray ($object) {
-        if(!is_object($object) && !is_array($object)){
-            return $object;
-        }
-        return array_map([$this, 'objectToArray'], (array) $object);
     }
 }

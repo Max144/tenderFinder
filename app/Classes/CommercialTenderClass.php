@@ -36,11 +36,10 @@ class CommercialTenderClass extends TenderClass
             $res = $this->getNewLinksSmarttender();
 
             foreach ($res as $info) {
-                $url = $this->createTenderLink($info['tenderId']);
                 try {
-                    $html = $this->client->get($url)->getBody();
+                    $html = $this->client->get($info['url'])->getBody();
                 } catch (\GuzzleHttp\Exception\RequestException $ex) {
-                    \Log::error($url . PHP_EOL . "error while receiving page content");
+                    \Log::error($info['url'] . PHP_EOL . "error while receiving page content");
                     continue;
                 }
 
@@ -53,9 +52,6 @@ class CommercialTenderClass extends TenderClass
                     $res = $matches[1];
                     $res = str_replace(["\r", "\n", "\t"], '', $res);
                     $res = str_replace('model', '"model"', $res);
-                    do {
-                        $res = preg_replace("/(“.+?)\"(.+?”)/", "$(1)$(2)", $res, -1, $count);
-                    } while ($count);
                     $res .= '}';
 
                     $tenderContent = json_decode($res);
@@ -66,12 +62,12 @@ class CommercialTenderClass extends TenderClass
                     }
                     $tenderName = $tenderContent->model->Title;
                 } catch (\Exception $ex) {
-                    \Log::error($url . PHP_EOL . "error while finding lots and getting name");
+                    \Log::error($info['url'] . PHP_EOL . "error while finding lots and getting name");
                     continue;
                 }
                 try {
                     $data = [
-                        'url' => $url,
+                        'url' => $info['url'],
                         'end_date' => $info['end_date'],
                         'type' => 'smarttender',
                         'search_id' => $this->search->id,
@@ -86,7 +82,7 @@ class CommercialTenderClass extends TenderClass
                         }
                     }
                 } catch (\Exception $ex) {
-                    \Log::error($url . PHP_EOL . "!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
+                    \Log::error($info['url'] . PHP_EOL . "!!!!!!$ex!!!!!!" . PHP_EOL . PHP_EOL . PHP_EOL);
                 }
             }
         }
