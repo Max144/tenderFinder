@@ -17,3 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', 'HomeController@index')->name('newTenders');
     Route::get('/all', 'HomeController@all')->name('allTenders');
 });
+
+Route::get('/calc', function (){
+    return view('calc');
+})->name('calc');
