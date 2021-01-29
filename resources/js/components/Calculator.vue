@@ -508,7 +508,8 @@ export default {
                 res = thickness * density * (width + 3) * (length + 3) / 1000000 * 1.331 * price * usdCourse
                     + (Math.ceil(length / 1000) + Math.ceil(width / 1000)) * 13
             }
-            return res;
+
+            return Math.round(res*100)/100;
         }
     },
 }
