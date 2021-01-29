@@ -33,20 +33,24 @@
         </div>
         <div v-if="materialSelected">
             <div class="row mt-3">
-                <div class="col-sm-3">
-                    <label for="length">Длина отрезка</label>
-                    <b-form-input id="length" type="number" v-model="length" size="sm"></b-form-input>
+                <div class="col-sm-6 text-center">
+                    <span class="h5">Размеры отрезка</span>
                 </div>
+            </div>
+            <div class="row mt-3">
                 <div class="col-sm-3">
-                    <label for="width">Ширина отрезка</label>
-                    <b-form-input id="width" type="number" v-model="width"  size="sm"></b-form-input>
+                    <b-form-input id="length" type="number" v-model="dimension1" size="sm"></b-form-input>
+                </div> *
+                <div class="col-sm-3">
+                    <b-form-input id="width" type="number" v-model="dimension2" size="sm"></b-form-input>
                 </div>
             </div>
         </div>
         <div class="row mt-2">
             <div class="col-sm-6"></div>
             <div class="col-sm-6">
-                <span class="alert-success font-weight-bold">{{formulaText}} = {{ result }}</span>
+                <div class="alert-success font-weight-bold">{{ info }}</div>
+                <div class="alert-success font-weight-bold">{{ formulaText }} = {{ result }}</div>
             </div>
         </div>
     </div>
@@ -66,7 +70,7 @@ export default {
             if (info !== undefined) {
                 this.materialSelected = true;
                 this.thicknessOptions = info.ths.map(function (data) {
-                    return {text: data.value, value: data.value, price: data.price};
+                    return {text: data.value + ' / ' + data.price + '$', value: data.value, price: data.price};
                 });
                 this.thickness = info.ths[0].value;
 
@@ -89,6 +93,10 @@ export default {
         },
         onSetListWidth: function (widthId) {
             this.listLength = widthId;
+        },
+        clearResult: function (widthId) {
+            this.info = '';
+            this.formulaText = '';
         }
     },
     data: function () {
@@ -98,8 +106,8 @@ export default {
             thickness: "",
             listLength: "",
             listWidth: "",
-            length: 0,
-            width: 0,
+            dimension1: 0,
+            dimension2: 0,
             materialSelected: false,
             thicknessOptions: [],
             lengthOptions: [],
@@ -107,6 +115,7 @@ export default {
             materialInfo: {},
             usdCourse: 29,
             formulaText: '',
+            info: '',
             materialOptions: [
                 {
                     value: 0,
@@ -443,33 +452,53 @@ export default {
     computed: {
         result: function () {
             if (this.widthOptions.length === 0) {
+                this.clearResult();
                 return 'undefined';
             }
             let thickness = parseFloat(this.thickness);
             let density = parseFloat(this.materialInfo.density);
             let usdCourse = parseFloat(this.usdCourse);
-            let width = parseFloat(this.width);
             let listWidth = parseFloat(this.widthOptions[this.listWidth].text);
-            let length = parseFloat(this.length);
             let listLength = parseFloat(this.lengthOptions[this.listLength].text);
             let price = parseFloat(this.thicknessOptions.find((option) => option.value === this.thickness).price);
 
+            let width = parseFloat(this.dimension1);
+            let length = parseFloat(this.dimension2);
+
+            if (width === undefined || width <= 0 || length === undefined || length <= 0) {
+                this.clearResult();
+                return 'error';
+            }
+
+            if (width < length) {
+                let temp = length;
+                length = width;
+                width = temp;
+            }
+
+            if (width > listWidth) {
+                if (width > listLength || length > listWidth) {
+                    this.clearResult();
+                    return 'неправильные размеры листа'
+                }
+                let temp = length;
+                length = width;
+                width = temp;
+            }
+
             let res;
 
-            if (width === undefined || width > listWidth || width === 0 ||
-                length === undefined || length > listLength || length === 0) {
-                return 'undefined';
-            }
+            this.info = "размер листа - " + length + "*" + width;
             if (width >= 0.85 * listWidth) {
-                this.formulaText = thickness + " * " + density + " * " + (length + 3) + " * " + listLength + " / " + 1.1 + ' / ' + 1000000
+                this.formulaText = thickness + " * " + density + " * " + (length + 3) + " * " + listWidth + " * " + 1.1 + ' / ' + 1000000
                     + ' * ' + price + " * " + usdCourse + " + (" + Math.ceil(length / 1000) + " + " + Math.ceil(width / 1000) + ') * ' + 13;
-                res = thickness * density * (length + 3) * listLength / 1.1 / 1000000  * price * usdCourse
+                res = thickness * density * (length + 3) * listWidth * 1.1 / 1000000 * price * usdCourse
                     + (Math.ceil(length / 1000) + Math.ceil(width / 1000)) * 13
 
             } else if (length >= 0.85 * listLength) {
-                this.formulaText = thickness + " * " + density + " * " + (width + 3) + " * " + listWidth + " / " + 1.2 + ' / ' + 1000000
+                this.formulaText = thickness + " * " + density + " * " + (width + 3) + " * " + listLength + " * " + 1.2 + ' / ' + 1000000
                     + ' * ' + price + " * " + usdCourse + " + (" + Math.ceil(length / 1000) + " + " + Math.ceil(width / 1000) + ') * ' + 13;
-                res = thickness * density * (width + 3) * listWidth / 1.2 / 1000000  * price * usdCourse
+                res = thickness * density * (width + 3) * listLength * 1.2 / 1000000 * price * usdCourse
                     + (Math.ceil(length / 1000) + Math.ceil(width / 1000)) * 13
 
             } else {
