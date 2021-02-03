@@ -12,3 +12,55 @@
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
+
+
+.tender-table td{
+    border-top: 2px solid grey;
+    border-bottom: 2px solid grey;
+    font-size: 1em;
+    width:33%;
+}
+
+.tender-table td.blank{
+    height: 50px;
+    border: none;
+}
+
+.tender-table tr{
+    width: 100%;
+}
+
+.tender-table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.tender-table tr.main{
+    cursor: pointer;
+}
+
+.tender-table tr td{
+    border-right: 1px solid black;
+    padding-left: 1em;
+}
+
+.tender-table tr.main td:first-child{
+    width: 20%;
+}
+
+.tender-table tr.main td:nth-child(2){
+    width: 70%;
+}
+
+.tender-table tr.main td:nth-child(3){
+    width: 10%;
+}
+
+table .dropMenu {
+    display: none;
+}
+
+.card-header{
+    text-align: center;
+}
