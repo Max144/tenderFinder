@@ -7,6 +7,7 @@
 
 require('./bootstrap');
 import Calculator from './components/Calculator.vue';
+import MaterialThicknessForm from './components/MaterialThicknessForm.vue';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
@@ -26,6 +27,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('calc', Calculator);
+Vue.component('material-thickness-form', MaterialThicknessForm);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

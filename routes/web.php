@@ -11,13 +11,21 @@
 |
 */
 
+use App\Http\Controllers\Admin\MaterialsController;
+
 Auth::routes();
 
 Route::middleware('auth')->group(function () {
     Route::get('/', 'HomeController@index')->name('newTenders');
     Route::get('/all', 'HomeController@all')->name('allTenders');
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('materials', 'Admin\MaterialsController')->only([
+            'index', 'show', 'create', 'store', 'edit', 'update'
+        ]);
+        Route::post('materials/{id}/destroy', 'Admin\MaterialsController@destroy')->name('materials.destroy');
+        Route::post('materials/{material}/update-thicknesses', 'Admin\MaterialsController@updateThicknesses')
+            ->name('materials.update-thicknesses');
+    });
 });
 
-Route::get('/calc', function (){
-    return view('calc');
-})->name('calc');
+Route::get('/calc', 'CalcController@calc');

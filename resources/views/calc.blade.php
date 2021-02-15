@@ -10,7 +10,7 @@
 </head>
 <body>
 <div id="app">
-    <calc></calc>
+    <calc :material-data="{{$materials}}"></calc>
 </div>
 </body>
 </html>
