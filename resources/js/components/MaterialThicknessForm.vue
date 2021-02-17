@@ -23,18 +23,18 @@
                      style="border: 1px solid black;">
                     <div class="form-group">
                         <label>
-                            Длина
-                            <input type="number" class="form-control"
-                                   :name="'dimensions[' + thickness.id + '][' + dimension.id + '][length]'"
-                                   v-model="dimension.length" step="0.01">
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label>
                             Ширина
                             <input type="number" class="form-control"
                                    :name="'dimensions[' + thickness.id + '][' + dimension.id + '][width]'"
                                    v-model="dimension.width" step="0.01">
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Длина
+                            <input type="number" class="form-control"
+                                   :name="'dimensions[' + thickness.id + '][' + dimension.id + '][length]'"
+                                   v-model="dimension.length" step="0.01">
                         </label>
                     </div>
                     <div class="form-group">
@@ -86,42 +86,42 @@ export default {
     data: function () {
         return {
             thicknessesArray: this.material.thicknesses,
-            nextId: 0,
+            thicknessNextId: 0,
+            dimensionNextId: 0,
         };
     },
     mounted: function () {
-        this.nextId = Math.max.apply(Math, this.thicknessesArray.map(function(obj) { return obj.id; })) + 1
+        this.thicknessNextId = Math.max.apply(Math, this.thicknessesArray.map(function(obj) { return obj.id; })) + 1
+        this.dimensionNextId = Math.max.apply(Math, this.thicknessesArray.map(function(obj) {
+            return Math.max.apply(Math, obj.dimensions.map(function(dimensionsObj) {
+                return dimensionsObj.id;
+            }));
+        })) + 1
     },
     methods: {
         deleteThickness: function (num) {
-            console.log(num);
-            console.log(this.thicknessesArray[num]);
             this.thicknessesArray.splice(num, 1);
         },
         addThickness: function () {
             this.thicknessesArray.push({
-                id: this.nextId++,
+                id: this.thicknessNextId++,
                 thickness: 0,
-                dimensions: []
+                dimensions: [
+                    {
+                        id: this.dimensionNextId++,
+                        width:1020,
+                        length:2020,
+                        price:0,
+                    }
+                ]
             })
         },
         deleteDimension: function (thicknessKey, num) {
             this.thicknessesArray[thicknessKey].dimensions.splice(num, 1);
         },
         addDimension: function (thicknessKey) {
-            let maxId;
-
-            if(this.thicknessesArray[thicknessKey].dimensions.length) {
-                maxId = Math.max.apply(
-                    Math,
-                    this.thicknessesArray[thicknessKey].dimensions.map(function(obj) { return obj.id; })
-                );
-            } else {
-                maxId = 0;
-            }
-
             this.thicknessesArray[thicknessKey].dimensions.push({
-                id: maxId + 1,
+                id: this.dimensionNextId++,
                 width: 0,
                 length: 0,
                 price: 0,
