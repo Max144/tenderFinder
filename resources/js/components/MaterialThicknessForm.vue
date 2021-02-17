@@ -103,17 +103,22 @@ export default {
             this.thicknessesArray.splice(num, 1);
         },
         addThickness: function () {
+            let defaultDimensions = [
+                {
+                    id: this.dimensionNextId++,
+                    width:1020,
+                    length:2020,
+                    price:0,
+                }
+            ];
+
+            if (this.thicknessesArray.length) {
+                defaultDimensions = this.thicknessesArray[this.thicknessesArray.length - 1].dimensions;
+            }
             this.thicknessesArray.push({
                 id: this.thicknessNextId++,
                 thickness: 0,
-                dimensions: [
-                    {
-                        id: this.dimensionNextId++,
-                        width:1020,
-                        length:2020,
-                        price:0,
-                    }
-                ]
+                dimensions: defaultDimensions
             })
         },
         deleteDimension: function (thicknessKey, num) {
