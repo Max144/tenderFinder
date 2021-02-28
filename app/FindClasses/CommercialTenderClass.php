@@ -8,12 +8,6 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class CommercialTenderClass extends TenderClass
 {
-
-    /**
-     * @var Search $search
-     */
-    protected $search;
-
     public function __construct(Tender $tender)
     {
         parent::__construct($tender);
@@ -24,18 +18,17 @@ class CommercialTenderClass extends TenderClass
     public function findTenders(Search $search)
     {
         $this->search = $search;
-        $this->findSmartTender();
+        $smartTenderNewTenders = $this->getNewLinksSmarttender();
+        $this->handleSmartTenderTendersArray($smartTenderNewTenders);
 //        $this->findAlladin();
 //        $this->findTenderGid();
 //        $this->findRealto();
     }
 
-    private function findSmartTender()
+    protected function handleSmartTenderTendersArray($tendersArray)
     {
         {
-            $res = $this->getNewLinksSmarttender();
-
-            foreach ($res as $info) {
+            foreach ($tendersArray as $info) {
                 try {
                     $html = $this->client->get($info['url'])->getBody();
                 } catch (\GuzzleHttp\Exception\RequestException $ex) {

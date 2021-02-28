@@ -13,14 +13,20 @@ class GovernmentTenderClass extends TenderClass
     {
         parent::__construct($tender);
         $this->tradeSegment = 3;
-        $this->smartTenderUrl = 'https://smarttender.biz/publichni-zakupivli-prozorro/';}
+        $this->smartTenderUrl = 'https://smarttender.biz/publichni-zakupivli-prozorro/';
+    }
 
     public function findTenders(Search $search)
     {
-        $res = $this->getNewLinksSmarttender();
-//        $res[] = ['url' => 'https://smarttender.biz/publichni-zakupivli-prozorro/9012885/', 'end_date'=>'2020-04-08 10:15:00', 'tenderId' => '9012885'];
+        $this->search = $search;
+        $tendersArray = $this->getNewLinksSmarttender();
 
-        foreach ($res as $info) {
+        $this->handleSmartTenderTendersArray($tendersArray);
+    }
+
+    protected function handleSmartTenderTendersArray($tendersArray)
+    {
+        foreach ($tendersArray as $info) {
             $tender_id = $info['tenderId'];
 
             $payload = "{\"tenderId\":\"{$tender_id}\"}";
@@ -53,10 +59,10 @@ class GovernmentTenderClass extends TenderClass
                     'url' => $info['url'],
                     'end_date' => $info['end_date'],
                     'type' => 'government',
-                    'search_id' => $search->id,
+                    'search_id' => $this->search->id,
                 ];
 
-                $tender = $search->tenders()->create($data);
+                $tender = $this->search->tenders()->create($data);
                 array_push($lots_list, $tender_name);
                 if ($this->checkLots($lots_list)) {
                     array_pop($lots_list);

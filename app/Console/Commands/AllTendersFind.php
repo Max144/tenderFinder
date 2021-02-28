@@ -7,21 +7,21 @@ use App\FindClasses\GovernmentTenderClass;
 use App\Models\Search;
 use Illuminate\Console\Command;
 
-class TendersFind extends Command
+class AllTendersFind extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenders:find';
+    protected $signature = 'tenders:find-all';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'deleting passed tenders and find new';
+    protected $description = 'deleting passed tenders and find new for last month';
 
     private $commercialTenderClass, $governmentTenderClass;
 
@@ -48,15 +48,14 @@ class TendersFind extends Command
         $this->commercialTenderClass->deletePassedDates();
         $this->governmentTenderClass->deletePassedDates();
 
-        Search::query()->doesnthave('tenders')->delete();
+        Search::doesnthave('tenders')->delete();
         $search = Search::create(['ended' => false]);
         $search->save();
 
-        $this->commercialTenderClass->findTenders($search);
-        $this->governmentTenderClass->findTenders($search);
+        $this->commercialTenderClass->findAllTenders($search);
+        $this->governmentTenderClass->findAllTenders($search);
 
         $search->ended = true;
         $search->save();
-
     }
 }

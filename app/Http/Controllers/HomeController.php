@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Search;
+use App\Models\Tender;
 use Carbon\Carbon;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        dd(Tender::where('url', 'like', '%17393083%')->first());
         $fromDate = Carbon::now();
         while($fromDate->isWeekend()) {
             $fromDate->subDay();
